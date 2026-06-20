@@ -7,6 +7,11 @@ chaining the installed kit (msfvenom, donut, freeze, pwncat, msfconsole).
 > store them carefully and only deploy against in-scope systems.
 
 ## Scripts
+
+Everything lives directly in this folder (generators, listeners, evasion helpers,
+and tool wrappers — all together).
+
+### Payload generation
 - **shellgen.sh** — prints reverse shells in every common language
   (bash/nc/python/perl/php/ruby/powershell) for a given LHOST/LPORT, plus
   base64 + URL-encoded variants and a PowerShell download-cradle. `-L` also
@@ -14,8 +19,28 @@ chaining the installed kit (msfvenom, donut, freeze, pwncat, msfconsole).
 - **payload-forge.sh** — guided `msfvenom → donut → freeze` build. Prints each
   command before running and saves all artifacts to one dir. Stop at any stage;
   bring your own raw shellcode with `-r`.
+- **macro.sh** — generates Office macro (VBA) and HTA payloads for
+  phishing/initial-access delivery.
+- **web-delivery.sh** — generates a Metasploit `web_delivery` one-liner
+  (PowerShell/Python/PHP) to stage a payload over HTTP.
+
+### Evasion
+- **obfuscate.sh** — PowerShell payload encoder / launcher helper (encoding,
+  download-cradle wrapping) to reduce trivial detection.
+- **scarecrow.sh** — wrapper around ScareCrow to produce EDR-evasive loaders
+  from raw shellcode.
+
+### Listener / catcher
 - **listener.sh** — one command for a catcher: raw (`pwncat-cs`/`rlwrap nc`/`nc`),
   a Metasploit `multi/handler` (`-m`), or a quick HTTP server to host payloads (`-w`).
+
+### Tool wrappers
+- **ligolo-ng.sh** — wrapper for **ligolo-ng**: sets up tunneling/pivoting through a
+  compromised host (proxy + agent).
+- **lazagne.sh** — wrapper for **LaZagne** to extract stored credentials on a host.
+- **traitor.sh** — wrapper for **Traitor**: automated Linux privilege escalation.
+- **potato.sh** — unified wrapper for the Windows **"potato"** privilege-escalation
+  family (Juicy/Rotten/PrintSpoofer-style SeImpersonate abuse).
 
 ## Typical flow
 ```
