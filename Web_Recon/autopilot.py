@@ -33,8 +33,10 @@ def main():
     ap = argparse.ArgumentParser(
         description="One-command recon -> rank -> chained exploitation "
                     "(authorized use only).")
-    ap.add_argument("--host", default=DEFAULTS["host"])
-    ap.add_argument("--port", type=int, default=DEFAULTS["port"])
+    ap.add_argument("--host", required=True,
+                    help="target host/IP (required)")
+    ap.add_argument("--port", type=int, required=True,
+                    help="target port (required)")
     ap.add_argument("--cookie", default=DEFAULTS["cookie"],
                     help="Cookie header value (auth/session token). If omitted, "
                          "you'll be asked whether the target needs one. Use "

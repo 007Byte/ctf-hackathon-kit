@@ -48,8 +48,10 @@ from collections import defaultdict
 # --------------------------------------------------------------------------- #
 
 DEFAULTS = {
-    "host": "192.168.1.77",
-    "port": 5002,
+    # No target ships with the tool — host and port are always supplied per run so
+    # the tool applies to any CTF / lab / authorized target. Never hardcode one here.
+    "host": None,
+    "port": None,
     # No cookie ships with the tool — supply your own with --cookie, or let the
     # script prompt for one interactively (see resolve_cookie below). Never commit
     # a real session token here.
@@ -834,8 +836,10 @@ class Recon:
 def main():
     ap = argparse.ArgumentParser(
         description="Web-cache poisoning / deception recon for CTFs (authorized use only).")
-    ap.add_argument("--host", default=DEFAULTS["host"])
-    ap.add_argument("--port", type=int, default=DEFAULTS["port"])
+    ap.add_argument("--host", required=True,
+                    help="target host/IP (required)")
+    ap.add_argument("--port", type=int, required=True,
+                    help="target port (required)")
     ap.add_argument("--cookie", default=DEFAULTS["cookie"],
                     help="Cookie header value (auth/session token). If omitted, "
                          "you'll be asked whether the target needs one. Use "

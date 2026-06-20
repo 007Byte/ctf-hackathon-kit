@@ -787,10 +787,11 @@ ALL_TECH = ["smuggle", "desync", "poison", "deception", "cpdos", "hmc", "chain"]
 
 
 # Fallback defaults used when neither the CLI nor a --from-recon file supplies a value.
-# No cookie is shipped: supply your own with --cookie, via the recon file, or answer
-# the interactive prompt. Never hardcode a real session token here.
+# Host/port are never hardcoded — pass them per run (or via --from-recon) so the tool
+# works against any authorized target. No cookie is shipped either: supply your own
+# with --cookie, via the recon file, or answer the interactive prompt.
 DEFAULTS = {
-    "host": "192.168.1.77", "port": 5002,
+    "host": None, "port": None,
     "cookie": None,
     "target": "/login", "source": "/join", "drop_path": "/drop",
 }
@@ -811,8 +812,8 @@ def main():
                     "(authorized use only). Companion to full_recon.py.")
     # Overridable connection/scope args default to None so we can tell whether the
     # user set them explicitly; precedence is: CLI > --from-recon file > DEFAULTS.
-    ap.add_argument("--host")
-    ap.add_argument("--port", type=int)
+    ap.add_argument("--host", help="target host/IP (or supply via --from-recon)")
+    ap.add_argument("--port", type=int, help="target port (or supply via --from-recon)")
     ap.add_argument("--cookie",
                     help="Cookie header value (auth/session token). If omitted and "
                          "not loaded from --from-recon, you'll be asked whether the "
@@ -854,6 +855,9 @@ def main():
 
     host = pick("host", "host")
     port = pick("port", "port")
+    if host is None or port is None:
+        sys.exit("error: target not set. Pass --host and --port, or load them with "
+                 "--from-recon <file> from a full_recon.py run.")
     cookie = pick("cookie", "cookie")
     if cookie is None:                      # nothing on CLI or in the recon file
         cookie = resolve_cookie(None)       # ask interactively (or "" if non-interactive)
