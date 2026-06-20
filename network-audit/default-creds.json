@@ -1,0 +1,163 @@
+{
+  "_about": {
+    "description": "Curated set of common DEFAULT / weak credentials for home-network security auditing of devices you OWN.",
+    "WARNING": "AUTHORIZED NETWORKS ONLY. Testing default credentials against devices you do not own may be illegal. Use only on equipment you own or are explicitly authorized to test.",
+    "sources": [
+      "https://cirt.net/passwords/",
+      "https://www.softwaretestinghelp.com/default-router-username-and-password-list/",
+      "https://kb.netgear.com/1148/What-are-the-default-user-interface-passwords-for-NETGEAR-devices",
+      "https://en.wikipedia.org/wiki/Default_password"
+    ],
+    "note": "A blank password is represented by an empty string \"\"."
+  },
+
+  "generic": [
+    {"user": "admin",        "pass": "admin"},
+    {"user": "admin",        "pass": "password"},
+    {"user": "admin",        "pass": ""},
+    {"user": "admin",        "pass": "1234"},
+    {"user": "admin",        "pass": "12345"},
+    {"user": "admin",        "pass": "123456"},
+    {"user": "admin",        "pass": "admin123"},
+    {"user": "admin",        "pass": "changeme"},
+    {"user": "administrator","pass": "administrator"},
+    {"user": "administrator","pass": "password"},
+    {"user": "root",         "pass": "root"},
+    {"user": "root",         "pass": ""},
+    {"user": "root",         "pass": "toor"},
+    {"user": "root",         "pass": "admin"},
+    {"user": "root",         "pass": "password"},
+    {"user": "user",         "pass": "user"},
+    {"user": "user",         "pass": "password"},
+    {"user": "guest",        "pass": "guest"},
+    {"user": "guest",        "pass": ""},
+    {"user": "support",      "pass": "support"},
+    {"user": "",             "pass": "admin"},
+    {"user": "",             "pass": ""}
+  ],
+
+  "ssh": [
+    {"user": "root",   "pass": "root"},
+    {"user": "root",   "pass": "toor"},
+    {"user": "root",   "pass": "admin"},
+    {"user": "root",   "pass": "password"},
+    {"user": "root",   "pass": "raspberry"},
+    {"user": "admin",  "pass": "admin"},
+    {"user": "admin",  "pass": "password"},
+    {"user": "pi",     "pass": "raspberry"},
+    {"user": "ubuntu", "pass": "ubuntu"},
+    {"user": "user",   "pass": "user"}
+  ],
+
+  "ftp": [
+    {"user": "anonymous", "pass": "anonymous"},
+    {"user": "anonymous", "pass": ""},
+    {"user": "ftp",       "pass": "ftp"},
+    {"user": "ftp",       "pass": ""},
+    {"user": "admin",     "pass": "admin"},
+    {"user": "admin",     "pass": "password"},
+    {"user": "root",      "pass": "root"},
+    {"user": "user",      "pass": "user"}
+  ],
+
+  "telnet": [
+    {"user": "admin", "pass": "admin"},
+    {"user": "admin", "pass": "password"},
+    {"user": "admin", "pass": ""},
+    {"user": "root",  "pass": "root"},
+    {"user": "root",  "pass": ""},
+    {"user": "root",  "pass": "admin"},
+    {"user": "root",  "pass": "xc3511"},
+    {"user": "root",  "pass": "vizxv"},
+    {"user": "user",  "pass": "user"},
+    {"user": "guest", "pass": "guest"}
+  ],
+
+  "http": [
+    {"user": "admin",         "pass": "admin"},
+    {"user": "admin",         "pass": "password"},
+    {"user": "admin",         "pass": ""},
+    {"user": "admin",         "pass": "1234"},
+    {"user": "admin",         "pass": "admin1234"},
+    {"user": "administrator", "pass": "password"},
+    {"user": "root",          "pass": "root"},
+    {"user": "user",          "pass": "user"},
+    {"user": "tomcat",        "pass": "tomcat"},
+    {"user": "manager",       "pass": "manager"}
+  ],
+
+  "mysql": [
+    {"user": "root", "pass": ""},
+    {"user": "root", "pass": "root"},
+    {"user": "root", "pass": "password"},
+    {"user": "root", "pass": "mysql"},
+    {"user": "root", "pass": "toor"},
+    {"user": "admin","pass": "admin"},
+    {"user": "mysql","pass": "mysql"}
+  ],
+
+  "postgres": [
+    {"user": "postgres", "pass": "postgres"},
+    {"user": "postgres", "pass": ""},
+    {"user": "postgres", "pass": "password"},
+    {"user": "postgres", "pass": "admin"}
+  ],
+
+  "router_vendors": {
+    "tp-link": [
+      {"user": "admin", "pass": "admin"},
+      {"user": "admin", "pass": "password"}
+    ],
+    "netgear": [
+      {"user": "admin", "pass": "password"},
+      {"user": "admin", "pass": "admin"},
+      {"user": "admin", "pass": "1234"}
+    ],
+    "linksys": [
+      {"user": "admin", "pass": "admin"},
+      {"user": "",      "pass": "admin"},
+      {"user": "admin", "pass": ""}
+    ],
+    "d-link": [
+      {"user": "admin", "pass": ""},
+      {"user": "admin", "pass": "admin"},
+      {"user": "user",  "pass": ""}
+    ],
+    "asus": [
+      {"user": "admin", "pass": "admin"}
+    ],
+    "belkin": [
+      {"user": "admin", "pass": ""},
+      {"user": "admin", "pass": "admin"}
+    ],
+    "cisco": [
+      {"user": "cisco", "pass": "cisco"},
+      {"user": "admin", "pass": "admin"},
+      {"user": "admin", "pass": "password"}
+    ],
+    "zyxel": [
+      {"user": "admin", "pass": "1234"},
+      {"user": "admin", "pass": "admin"}
+    ],
+    "huawei": [
+      {"user": "admin",     "pass": "admin"},
+      {"user": "telecomadmin","pass": "admintelecom"}
+    ],
+    "tenda": [
+      {"user": "admin", "pass": "admin"}
+    ],
+    "mikrotik": [
+      {"user": "admin", "pass": ""}
+    ],
+    "ubiquiti": [
+      {"user": "ubnt", "pass": "ubnt"}
+    ],
+    "netcomm": [
+      {"user": "admin", "pass": "admin"}
+    ],
+    "actiontec": [
+      {"user": "admin", "pass": "password"},
+      {"user": "admin", "pass": "admin"}
+    ]
+  }
+}

