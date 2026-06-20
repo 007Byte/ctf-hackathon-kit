@@ -100,7 +100,8 @@ Open in a browser → **Ctrl+P → Save as PDF** for an offline one-file referen
 
 ```bash
 # 1. Get the pack onto Kali (clone, scp, or shared folder), then:
-cd CY5770/Hackathon
+#    (if you cloned it, the folder is named after the repo)
+cd ctf-hackathon-kit
 
 # 2. Fix Windows line endings (these files were authored on Windows)
 sudo apt install -y dos2unix
@@ -112,7 +113,7 @@ sudo ./scripts/install/install-tools.sh
 ./scripts/install/install-python-libs.sh          # choose venv mode
 
 # 4. Load the aliases (every shell)
-echo 'source ~/CY5770/Hackathon/aliases/ctf-aliases.sh' >> ~/.bashrc
+echo 'source ~/ctf-hackathon-kit/aliases/ctf-aliases.sh' >> ~/.bashrc
 source ~/.bashrc && ctfhelp
 
 # 5. New challenge? Scaffold a folder:

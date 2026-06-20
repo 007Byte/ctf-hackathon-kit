@@ -1,6 +1,6 @@
 # Server Recon / Service Enumeration Tools
 
-Deep, per-service enumeration tools for the CY5770 Hackathon toolkit. These run
+Deep, per-service enumeration tools for the hackathon toolkit. These run
 on **Kali/Linux** and are designed to **complement** (not replace) the basic
 recon scripts in [`../../scripts/recon/`](../../scripts/recon/):
 

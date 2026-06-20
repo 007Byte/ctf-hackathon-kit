@@ -5,12 +5,12 @@
 # HOW TO USE
 # ----------
 #   1. Drop this file somewhere stable, e.g.:
-#        ~/CY5770/Hackathon/aliases/ctf-aliases.sh
+#        ~/ctf-hackathon-kit/aliases/ctf-aliases.sh
 #   2. Source it from your shell rc so it loads in every terminal.
 #
 #      For bash, add to the END of ~/.bashrc:
-#        [ -f "$HOME/CY5770/Hackathon/aliases/ctf-aliases.sh" ] && \
-#            source "$HOME/CY5770/Hackathon/aliases/ctf-aliases.sh"
+#        [ -f "$HOME/ctf-hackathon-kit/aliases/ctf-aliases.sh" ] && \
+#            source "$HOME/ctf-hackathon-kit/aliases/ctf-aliases.sh"
 #
 #      For zsh, add the same line to ~/.zshrc.
 #

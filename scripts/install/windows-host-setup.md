@@ -217,7 +217,7 @@ Invoke-WebRequest http://<host-ip>:8000/file -OutFile file
 ## 7. Suggested folder layout on the host
 
 ```
-C:\Users\<you>\CY5770\Hackathon\
+C:\Users\<you>\ctf-hackathon-kit\
 ├── scripts\install\      # install-tools.sh, install-python-libs.sh, this guide
 ├── aliases\              # ctf-aliases.sh  (source it inside WSL/VM Kali)
 ├── boxes\                # one folder per machine/challenge (mkctf scaffolds these)

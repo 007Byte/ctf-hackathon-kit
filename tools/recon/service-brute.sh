@@ -2,7 +2,7 @@
 ###############################################################################
 # service-brute.sh - Safe(r) hydra wrapper for credential testing
 #
-# Part of the CY5770 Hackathon recon toolkit. A thin, well-guarded wrapper
+# Part of the hackathon recon toolkit. A thin, well-guarded wrapper
 # around THC-Hydra for credential testing against common services:
 #   ssh, ftp, smb, rdp, mysql, http-post-form
 #

@@ -2,7 +2,7 @@
 ###############################################################################
 # smb-enum.sh - Focused SMB / NetBIOS enumeration tool
 #
-# Part of the CY5770 Hackathon recon toolkit. Goes deeper on SMB than the
+# Part of the hackathon recon toolkit. Goes deeper on SMB than the
 # generic server-enum.sh: supports null, guest, and credentialed sessions;
 # lists and spiders readable shares; enumerates users/groups/password policy;
 # does RID cycling as a fallback; and checks for common SMB vulns (MS17-010).

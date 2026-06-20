@@ -2,7 +2,7 @@
 """
 http-recon.py - Deep HTTP(S) reconnaissance tool
 
-Part of the CY5770 Hackathon recon toolkit. This is the Python counterpart to
+Part of the hackathon recon toolkit. This is the Python counterpart to
 the existing bash web-enum.sh (which focuses on dir/vhost fuzzing). This tool
 focuses on *fingerprinting and content analysis* of a single URL:
 
@@ -367,7 +367,7 @@ def main():
     )
     p.add_argument("url", help="Target URL (e.g. http://10.10.10.5/)")
     p.add_argument("--timeout", type=float, default=10.0, help="Request timeout seconds (default 10)")
-    p.add_argument("--user-agent", default="http-recon/1.0 (+CY5770-toolkit)",
+    p.add_argument("--user-agent", default="http-recon/1.0",
                    help="Custom User-Agent header")
     p.add_argument("--proxy", help="Proxy URL, e.g. http://127.0.0.1:8080 (Burp/ZAP)")
     p.add_argument("-k", "--insecure", action="store_true",

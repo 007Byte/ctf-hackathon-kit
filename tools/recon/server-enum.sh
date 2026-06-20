@@ -2,7 +2,7 @@
 ###############################################################################
 # server-enum.sh - Deep multi-service enumeration orchestrator
 #
-# Part of the CY5770 Hackathon recon toolkit. This tool COMPLEMENTS (does not
+# Part of the hackathon recon toolkit. This tool COMPLEMENTS (does not
 # replace) the basic scripts in ../../scripts/recon/ (auto-recon.sh,
 # web-enum.sh, port-scan.py, subdomain-enum.py, flag-finder.sh). It performs a
 # quick port discovery pass and then runs DEEP, per-service enumeration for
