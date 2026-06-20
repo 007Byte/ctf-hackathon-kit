@@ -23,11 +23,14 @@ What it does, in order:
 Authorized testing only (CTF / lab / your own systems).
 
 Usage:
-  python full_recon.py --host 192.168.1.77 --port 5002 \
-      --cookie "hacker_token=13-AABHjyXghT3KLRiNvETNkQ-13" \
+  python full_recon.py --host TARGET --port 5002 \
+      --cookie "session=<your-token-here>" \
       --path /login --path /join
 
   python full_recon.py --host TARGET --port 80 --phases 1,3,5   # only some phases
+
+  # Omit --cookie and the tool asks whether the target needs one, then prompts.
+  python full_recon.py --host TARGET --port 80
 """
 
 import argparse
@@ -47,10 +50,47 @@ from collections import defaultdict
 DEFAULTS = {
     "host": "192.168.1.77",
     "port": 5002,
-    "cookie": "hacker_token=13-AABHjyXghT3KLRiNvETNkQ-13",
+    # No cookie ships with the tool — supply your own with --cookie, or let the
+    # script prompt for one interactively (see resolve_cookie below). Never commit
+    # a real session token here.
+    "cookie": None,
     # endpoint the app uses to flush its cache between tests; set "" if none
     "drop_path": "/drop",
 }
+
+
+def resolve_cookie(value):
+    """Return the Cookie header value to use for this run.
+
+    Precedence:
+      1. An explicit value (from --cookie, or loaded from a recon JSON file) is
+         used verbatim — including an explicit empty string, meaning "no cookie".
+      2. If nothing was supplied and we're attached to a terminal, ask whether the
+         target needs an auth cookie / session token and, if so, prompt for it.
+      3. If nothing was supplied and we're NOT interactive (piped/CI), proceed with
+         no cookie rather than blocking.
+
+    This keeps session tokens out of the source tree: each user provides their own.
+    """
+    if value is not None:
+        return value
+    if not sys.stdin.isatty():
+        return ""
+    try:
+        ans = input(
+            "Does the target require an auth cookie / session token? [y/N] "
+        ).strip().lower()
+    except EOFError:
+        return ""
+    if ans in ("y", "yes"):
+        try:
+            token = input(
+                '  paste the full Cookie header value (e.g. "session=abc123"): '
+            ).strip()
+        except EOFError:
+            return ""
+        return token
+    return ""
 
 # Common CTF / web app endpoints to discover. User --path entries are added to this.
 WORDLIST = [
@@ -797,7 +837,9 @@ def main():
     ap.add_argument("--host", default=DEFAULTS["host"])
     ap.add_argument("--port", type=int, default=DEFAULTS["port"])
     ap.add_argument("--cookie", default=DEFAULTS["cookie"],
-                    help="Cookie header value (auth/session token)")
+                    help="Cookie header value (auth/session token). If omitted, "
+                         "you'll be asked whether the target needs one. Use "
+                         '--cookie "" to force no cookie without being prompted.')
     ap.add_argument("--drop-path", default=DEFAULTS["drop_path"],
                     help="cache-flush endpoint (set '' if none)")
     ap.add_argument("--path", action="append", default=[],
@@ -812,6 +854,7 @@ def main():
     if args.no_color or not sys.stdout.isatty():
         C.on = False
 
+    args.cookie = resolve_cookie(args.cookie)
     t = Target(args.host, args.port, args.cookie, args.drop_path)
     recon = Recon(t, args.path)
     phases = {p.strip() for p in args.phases.split(",") if p.strip()}

@@ -15,7 +15,8 @@ full_recon.py / full_attack.py individually (autopilot only orchestrates them).
 Authorized testing only (CTF / lab / your own systems).
 
 Examples:
-  python autopilot.py --host 192.168.1.77 --port 5002 --cookie "hacker_token=..."
+  python autopilot.py --host T --port 5002 --cookie "session=<your-token-here>"
+  python autopilot.py --host T --port 80                          # asks if a cookie is needed
   python autopilot.py --host T --port 80 --aggressive            # full sweep + chains
   python autopilot.py --host T --port 80 --target /login         # skip auto-selection
   python autopilot.py --host T --port 80 --deep-recon --json recon.json
@@ -24,7 +25,7 @@ Examples:
 import argparse
 import sys
 
-from full_recon import Target, Recon, C, phase
+from full_recon import Target, Recon, C, phase, resolve_cookie
 from full_attack import Attacker, DEFAULTS
 
 
@@ -34,7 +35,10 @@ def main():
                     "(authorized use only).")
     ap.add_argument("--host", default=DEFAULTS["host"])
     ap.add_argument("--port", type=int, default=DEFAULTS["port"])
-    ap.add_argument("--cookie", default=DEFAULTS["cookie"])
+    ap.add_argument("--cookie", default=DEFAULTS["cookie"],
+                    help="Cookie header value (auth/session token). If omitted, "
+                         "you'll be asked whether the target needs one. Use "
+                         '--cookie "" to force no cookie.')
     ap.add_argument("--drop-path", default=DEFAULTS["drop_path"],
                     help="cache-flush endpoint ('' if none)")
     ap.add_argument("--path", action="append", default=[],
@@ -59,6 +63,7 @@ def main():
     if args.no_color or not sys.stdout.isatty():
         C.on = False
 
+    args.cookie = resolve_cookie(args.cookie)
     t = Target(args.host, args.port, args.cookie, args.drop_path)
 
     print(C.hdr(f"\nautopilot -> {args.host}:{args.port}"))

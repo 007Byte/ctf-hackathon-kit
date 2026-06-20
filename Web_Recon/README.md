@@ -47,9 +47,14 @@ host it's for. When they disagree, you can:
 ### Easiest: autopilot (one command)
 
 ```bash
-python autopilot.py --host 192.168.1.77 --port 5002 \
-    --cookie "hacker_token=13-AABHjyXghT3KLRiNvETNkQ-13"
+python autopilot.py --host TARGET --port 5002 \
+    --cookie "session=<your-token-here>"
 ```
+
+> **Cookies / session tokens are not bundled.** Supply your own with `--cookie`.
+> If you leave `--cookie` off, the tool asks *"Does the target require an auth
+> cookie / session token? [y/N]"* and prompts you to paste it. Pass `--cookie ""`
+> to skip both the prompt and any cookie.
 
 `autopilot.py` runs recon, ranks the endpoints, auto-selects the best target (and a
 content-substitution source), then runs **every attack technique and all the chains**
@@ -63,8 +68,8 @@ Run recon, save its findings, then let the attacker aim itself from that file:
 
 ```bash
 # 1. Map the target and write findings to recon.json
-python full_recon.py --host 192.168.1.77 --port 5002 \
-    --cookie "hacker_token=13-AABHjyXghT3KLRiNvETNkQ-13" \
+python full_recon.py --host TARGET --port 5002 \
+    --cookie "session=<your-token-here>" \
     --json recon.json
 
 # 2. Attack using whatever recon decided was the best target
@@ -104,9 +109,9 @@ Runs in **7 phases**. You can run a subset with `--phases`.
 ### Examples
 
 ```bash
-# Full recon with defaults, colored to screen
-python full_recon.py --host 192.168.1.77 --port 5002 \
-    --cookie "hacker_token=..."
+# Full recon, colored to screen (omit --cookie to be asked if one is needed)
+python full_recon.py --host TARGET --port 5002 \
+    --cookie "session=<your-token-here>"
 
 # Add custom endpoints you already know about
 python full_recon.py --host T --port 80 --path /api/flag --path /admin
@@ -179,8 +184,8 @@ so `--tech chain` works standalone too. Each chain prints the exact request to r
 
 ```bash
 # Standalone: attack a known target/source directly
-python full_attack.py --host 192.168.1.77 --port 5002 \
-    --cookie "hacker_token=..." --target /login --source /join
+python full_attack.py --host TARGET --port 5002 \
+    --cookie "session=<your-token-here>" --target /login --source /join
 
 # Only smuggling + poisoning, full obfuscation sweep
 python full_attack.py --host T --port 80 --target /login \
